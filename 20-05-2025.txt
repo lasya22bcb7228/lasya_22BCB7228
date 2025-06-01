@@ -1,0 +1,53 @@
+create database tuesday;
+use tuesday;
+create table category(
+id int primary Key,
+name varchar(25),
+descp varchar(50)
+);
+insert into category values
+(1,'electronics','griewhkhdeouwh'),
+(2,'furniture','nfsauihfasuhiuhjfaihej');
+select * from category;
+desc category;
+create table products(
+p_id int primary key,
+p_name varchar(25),
+p_descp varchar(50),
+id int,
+foreign key products(id) references category(id));
+desc products;
+
+insert into products values(101,'iphone xs','xxxxxxxxc',1);
+insert into products values(102,'wooden chair','aaaaaaaa',2);
+select * from products;
+update category set id=3 where id=1; #not updated
+delete from category where id=2; #not deleted
+alter table category add constraint uc_category unique (name);
+alter table category drop index uc_category;
+
+
+create table orders(
+o_id int primary key,
+o_name varchar(30),
+o_address varchar(30),
+p_id int,
+constraint fk_productsorders foreign key (p_id) references products(p_id));
+desc orders;
+
+insert into orders values(201,'iphone xs','India',101);
+select * from orders;
+alter table orders drop foreign key fk_productsorders;
+alter table orders add check(p_id=101 or p_id=102);
+insert into orders values(202,'iphone','Denmark',103); #shows error bcs no p_id=103
+
+
+create table persons(
+id int primary key,
+f_name varchar(40),
+l_name varchar(40),
+country varchar(40) default 'India');
+insert into persons (id,f_name.l_name) values(201,'Aditi','Roy'); 
+select * from persons;
+
+
