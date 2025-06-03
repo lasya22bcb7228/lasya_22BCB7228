@@ -1,0 +1,426 @@
+read data
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class crudconnection {
+
+    public static void main(String[] args) {
+        crudconnection obj = new crudconnection(); 
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Student Serial Number: ");
+        String slNo = sc.nextLine();
+
+        System.out.print("Enter Student Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Student Mark: ");
+        int mark = sc.nextInt();
+
+        obj.createData(slNo, name, mark);
+        sc.close();
+    }
+
+    public void createData(String slNo, String name, int mark) {
+        Connection connection = getConnection(); 
+        PreparedStatement ps = null;
+        try {
+            String query = "INSERT INTO student VALUES (?, ?, ?)";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, slNo);
+            ps.setString(2, name);
+            ps.setInt(3, mark);
+            System.out.println("Executing Query: " + ps);
+            ps.executeUpdate();
+            System.out.println("Data inserted successfully.");
+        } catch (Exception e) {
+            System.out.println("Error inserting data: " + e);
+        }
+    }
+
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", 
+                "root",                            
+                "root0909"                   
+            );
+        } catch (Exception e) {
+            System.out.println("Connection failed: " + e);
+        }
+        return connection;
+    }
+}
+insert data
+
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Scanner;
+
+public class crudconnection {
+
+    public static void main(String[] args) {
+        crudconnection obj = new crudconnection(); 
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the number of students to insert: ");
+        int n = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        for (int i = 1; i <= n; i++) {
+            System.out.println("Enter details for student " + i);
+
+            System.out.print("Enter Student Serial Number: ");
+            String slNo = sc.nextLine();
+
+            System.out.print("Enter Student Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Student Mark: ");
+            int mark = sc.nextInt();
+            sc.nextLine(); 
+
+            obj.createData(slNo, name, mark);
+        }
+
+        
+        System.out.println("\n--- All Students in Database ---");
+        obj.readData();
+
+        sc.close();
+    }
+
+    public void createData(String slNo, String name, int mark) {
+        Connection connection = getConnection(); 
+        PreparedStatement ps = null;
+        try {
+            String query = "INSERT INTO student VALUES (?, ?, ?)";
+            ps = connection.prepareStatement(query);
+            ps.setString(1, slNo);
+            ps.setString(2, name);
+            ps.setInt(3, mark);
+            ps.executeUpdate();
+            System.out.println("Inserted: " + slNo + ", " + name + ", " + mark);
+        } catch (Exception e) {
+            System.out.println("Error inserting data: " + e);
+        }
+    }
+
+    public void readData() {
+        Connection connection = getConnection(); 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String query = "SELECT * FROM student";
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String slNo = rs.getString(1);
+                String name = rs.getString(2);
+                int mark = rs.getInt(3);
+                System.out.println("SlNo: " + slNo);
+                System.out.println("Name: " + name);
+                System.out.println("Marks: " + mark);
+                System.out.println("-------------------------");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error reading data: " + e);
+        }
+    }
+
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", 
+                "root",                            
+                "root0909"                   
+            );
+        } catch (Exception e) {
+            System.out.println("Connection failed: " + e);
+        }
+        return connection;
+    }
+}
+update
+
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class crudconnection {  // Class name with uppercase C
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        crudconnection obj = new crudconnection();
+
+        System.out.print("Enter the number of students you want to update: ");
+        int n = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        for (int i = 1; i <= n; i++) {
+            System.out.println("\nUpdating student " + i + ":");
+
+            System.out.print("Enter Old ID (integer): ");
+            String oldId = sc.nextLine();
+
+            System.out.print("Enter New ID (integer): ");
+            String newId = sc.nextLine();
+
+            System.out.print("Enter New Name: ");
+            String newName = sc.nextLine();
+
+            System.out.print("Enter New Marks (integer): ");
+            int newMark = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            obj.updateData(oldId, newId, newName, newMark);
+        }
+
+        sc.close();
+    }
+
+    public void updateData(String oldId, String newId, String name, int mark) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", "root", "root0909");
+
+            String query = "UPDATE student SET id=?, name=?, marks=? WHERE id=?";
+            ps = connection.prepareStatement(query);
+
+            ps.setInt(1, Integer.parseInt(newId));
+            ps.setString(2, name);
+            ps.setInt(3, mark);
+            ps.setInt(4, Integer.parseInt(oldId));
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("✔ Student record updated successfully.");
+            } else {
+                System.out.println("✘ No student found with ID: " + oldId);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Input Error: ID must be an integer.");
+        } catch (Exception e) {
+            System.out.println("Update Error: " + e);
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (connection != null) connection.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex);
+            }
+        }
+    }
+}
+
+alter table column
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class AlterColumn {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        AlterColumn obj = new AlterColumn();
+
+        System.out.print("Enter the column name to alter: ");
+        String oldColumn = sc.nextLine();
+
+        System.out.print("Enter the new column name (or same name if only changing datatype): ");
+        String newColumn = sc.nextLine();
+
+        System.out.print("Enter the new data type (e.g., VARCHAR(100), INT, FLOAT): ");
+        String newDatatype = sc.nextLine();
+
+        obj.alterTableColumn(oldColumn, newColumn, newDatatype);
+
+        sc.close();
+    }
+
+    public void alterTableColumn(String oldColumn, String newColumn, String newDatatype) {
+        Connection connection = null;
+        Statement stmt = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", "root", "root0909");
+
+            stmt = connection.createStatement();
+            String query = "ALTER TABLE student CHANGE " + oldColumn + " " + newColumn + " " + newDatatype;
+
+            stmt.executeUpdate(query);
+            System.out.println("✔ Column altered successfully.");
+
+        } catch (Exception e) {
+            System.out.println("Alter Error: " + e);
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex);
+            }
+        }
+    }
+}
+
+
+
+
+delete 
+
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class crudconnection {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        crudconnection obj = new crudconnection();
+
+        System.out.print("Enter the number of students you want to delete: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        for (int i = 1; i <= n; i++) {
+            System.out.print("Enter Student ID to delete: ");
+            String id = sc.nextLine();
+
+            obj.deleteData(id);
+        }
+
+        sc.close();
+    }
+
+    public void deleteData(String id) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", "root", "root0909");
+
+            String query = "DELETE FROM student WHERE id=?";
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id));
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Student with ID " + id + " deleted successfully.");
+            } else {
+                System.out.println("No student found with ID: " + id);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Input Error: ID must be an integer.");
+        } catch (Exception e) {
+            System.out.println("Delete Error: " + e);
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (connection != null) connection.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex);
+            }
+        }
+    }
+}
+
+Fetch student using WHERE clause
+
+
+
+
+package crudoperation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.*;
+
+public class crudconnection {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        crudconnection obj = new crudconnection();
+
+        System.out.print("Enter Student ID to retrieve: ");
+        String id = sc.nextLine();
+
+        obj.getStudentById(id);
+
+        sc.close();
+    }
+
+    public void getStudentById(String id) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/vit", "root", "root0909");
+
+            String query = "SELECT * FROM student WHERE id = ?";
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id));
+
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                System.out.println("Student Details:");
+                System.out.println("ID: " + rs.getInt("id"));
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("Marks: " + rs.getInt("marks"));
+            } else {
+                System.out.println("No student found with ID: " + id);
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Input Error: ID must be an integer.");
+        } catch (Exception e) {
+            System.out.println("Fetch Error: " + e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (connection != null) connection.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex);
+            }
+        }
+    }
+}
+
