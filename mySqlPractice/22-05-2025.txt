@@ -1,0 +1,49 @@
+use wednesday;
+select * from worker;
+select department,count(department) from worker group by department;
+select department,count(department) from worker group by department order by count(department) desc limit 1;
+select department,count(department) as sume from worker group by department order by sume desc limit 1;
+
+select department,count(department) from worker 
+group by department
+having count(department)>3;
+
+#sub-query
+select first_name,department from worker 
+where salary=(select(max(salary)) from worker);
+
+select first_name,department from worker 
+where salary=(select(min(salary)) from worker);
+
+select first_name,joining_date from worker 
+where joining_date=(select(min(joining_date)) from worker);
+
+select first_name,department from worker 
+where salary=(select(max(salary)) from worker) and first_name like 'V%';
+
+create table Student(
+s_id int,
+s_name varchar(30));
+
+insert into Student values (101,'lasya'),(102,'mithra'),(103,'suresh'),(104,'soha'),(105,'mithuna'),(106,'yashna');
+
+create table address(
+s_id int,
+s_address varchar(30));
+
+insert into address values (101,'mumbai'),(104,'hyd'),(105,'delhi');
+
+select * from student cross join address;
+select * from student inner join address where student.s_id = address.s_id;
+select * from Student left outer join address on (Student.s_id=address.s_id);
+select * from Student right outer join address on (Student.s_id=address.s_id);
+
+#find 5th highest salary not use limit,offset,top
+
+SELECT DISTINCT salary
+FROM worker w1
+WHERE (
+  SELECT COUNT(DISTINCT w2.salary)
+  FROM worker w2
+  WHERE w2.salary > w1.salary
+) = 4;
