@@ -1,0 +1,25 @@
+show databases;
+show tables from lasya;
+create database VIT_AP;
+create database vit;
+show databases;
+drop database vit;
+use vit_ap;
+create table csbs(
+id int,
+name varchar(40),
+marks int
+);
+select * from csbs;
+insert into csbs values
+(1,'lasya',98),(2,'mithra',97);
+desc csbs;
+alter table csbs add(
+address varchar(40),
+skills varchar(20)
+);
+alter table csbs drop column skills;
+alter table csbs add(
+country varchar(10) default 'India');
+update csbs set marks=100 where id=1;
+update csbs set marks = marks+50;
